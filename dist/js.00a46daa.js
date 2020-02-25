@@ -5,6 +5,8 @@
 //
 // anything defined in a previous bundle is accessed via the
 // orig method which is the require for previous bundles
+
+// eslint-disable-next-line no-global-assign
 parcelRequire = (function (modules, cache, entry, globalName) {
   // Save the require from previous bundle to this closure if any
   var previousRequire = typeof parcelRequire === 'function' && parcelRequire;
@@ -75,16 +77,8 @@ parcelRequire = (function (modules, cache, entry, globalName) {
     }, {}];
   };
 
-  var error;
   for (var i = 0; i < entry.length; i++) {
-    try {
-      newRequire(entry[i]);
-    } catch (e) {
-      // Save first error but execute all entries
-      if (!error) {
-        error = e;
-      }
-    }
+    newRequire(entry[i]);
   }
 
   if (entry.length) {
@@ -109,13 +103,6 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   }
 
   // Override the current require with this new one
-  parcelRequire = newRequire;
-
-  if (error) {
-    // throw error from earlier, _after updating parcelRequire_
-    throw error;
-  }
-
   return newRequire;
 })({"js/helpers.js":[function(require,module,exports) {
 "use strict";
@@ -124,13 +111,76 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.getElements = getElements;
+exports.getLocalStorageItem = getLocalStorageItem;
+exports.setLocalStorageItem = setLocalStorageItem;
+exports.localStorageExists = localStorageExists;
+exports.getDate = getDate;
 
+/**
+ * Get Dom elements from an identifier-string key-value pair.
+ * @param {Object} map 
+ */
 function getElements(map) {
   Object.keys(map).forEach(function (item) {
     var domNode = document.querySelector(map[item]);
     map[item] = domNode;
   });
 }
+/**
+ * Get object from Local Storage.
+ * @param {string} item 
+ */
+
+
+function getLocalStorageItem(item) {
+  return JSON.parse(window.localStorage.getItem(item));
+}
+/**
+ * Set item from Local Storage to JSON value.
+ * @param {string} item
+ */
+
+
+function setLocalStorageItem(item, value) {
+  return window.localStorage.setItem("".concat(item), JSON.stringify(value));
+}
+
+;
+/**
+ * Set item from Local Storage to JSON value.
+ * @param {string} item
+ */
+
+function localStorageExists(item) {
+  return !(window.localStorage.getItem(item) === null);
+}
+
+;
+/**
+ * Get current date in YYYY-MM-DD format.
+ */
+
+function getDate() {
+  var date = new Date();
+  var year = date.getFullYear();
+  var month = (date.getMonth() + 1).toString().padStart(2, '0');
+  var day = date.getDate().toString().padStart(2, '0');
+  var dateString = "".concat(year, "-").concat(month, "-").concat(day);
+  return dateString;
+}
+},{}],"js/globals.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.LOCALSTORAGE_TEMPLATE = exports.LOCALSTORAGE_NAME = void 0;
+var LOCALSTORAGE_NAME = "todo-list";
+exports.LOCALSTORAGE_NAME = LOCALSTORAGE_NAME;
+var LOCALSTORAGE_TEMPLATE = {
+  user: "mh15"
+};
+exports.LOCALSTORAGE_TEMPLATE = LOCALSTORAGE_TEMPLATE;
 },{}],"js/state.js":[function(require,module,exports) {
 "use strict";
 
@@ -139,20 +189,28 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.initializeState = initializeState;
 exports.checkState = checkState;
-exports.state = void 0;
-var state = {
-  list: []
-};
-exports.state = state;
 
-function initializeState(state) {
-  console.log("State setup.");
+var _helpers = require("./helpers");
+
+var _globals = require("./globals");
+
+function initializeState() {
+  var state;
+
+  if (!(0, _helpers.localStorageExists)(_globals.LOCALSTORAGE_NAME)) {
+    console.log("First session. Copy LOCALSTORAGE_TEMPLATE to store.");
+    state = (0, _helpers.setLocalStorageItem)(_globals.LOCALSTORAGE_NAME, _globals.LOCALSTORAGE_TEMPLATE);
+  } else {
+    state = (0, _helpers.getLocalStorageItem)(_globals.LOCALSTORAGE_NAME);
+  }
+
+  return state;
 }
 
 function checkState(state) {
   state.key = "b"; // console.log(state)
 }
-},{}],"js/list.js":[function(require,module,exports) {
+},{"./helpers":"js/helpers.js","./globals":"js/globals.js"}],"js/list.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -170,6 +228,8 @@ var _state = require("./state");
 
 var _list = require("./list");
 
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
 window.addEventListener("load", onLoad); // define DOM stuff
 
 var dom = {
@@ -182,9 +242,29 @@ var dom = {
 function onLoad() {
   (0, _helpers.getElements)(dom);
   console.log(dom);
-  (0, _state.initializeState)(_state.state); // dom.
+  var state = (0, _state.initializeState)();
+  console.log(state);
+  setupInput(dom);
 }
-},{"./helpers":"js/helpers.js","./state":"js/state.js","./list":"js/list.js"}],"../../../../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+
+function setupInput(dom) {
+  dom.name_input.value = "";
+  dom.category_input.value = "";
+  dom.date_input.value = (0, _helpers.getDate)();
+  dom.date_input.addEventListener('keydown', function (e) {
+    console.log(e.keyCode);
+
+    if (e.keyCode === 13) {
+      addNewNote(dom.name_input.value, dom.category_input.value, dom.date_input.value);
+    }
+  });
+}
+
+function addNewNote(note, category, date) {
+  console.log(_typeof(date));
+  console.log(note, category, date);
+}
+},{"./helpers":"js/helpers.js","./state":"js/state.js","./list":"js/list.js"}],"../../../../../../../usr/local/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -206,47 +286,26 @@ function Module(moduleName) {
 }
 
 module.bundle.Module = Module;
-var checkedAssets, assetsToAccept;
 var parent = module.bundle.parent;
 
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "61167" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55041" + '/');
 
   ws.onmessage = function (event) {
-    checkedAssets = {};
-    assetsToAccept = [];
     var data = JSON.parse(event.data);
 
     if (data.type === 'update') {
-      var handled = false;
+      console.clear();
+      data.assets.forEach(function (asset) {
+        hmrApply(global.parcelRequire, asset);
+      });
       data.assets.forEach(function (asset) {
         if (!asset.isNew) {
-          var didAccept = hmrAcceptCheck(global.parcelRequire, asset.id);
-
-          if (didAccept) {
-            handled = true;
-          }
+          hmrAccept(global.parcelRequire, asset.id);
         }
-      }); // Enable HMR for CSS by default.
-
-      handled = handled || data.assets.every(function (asset) {
-        return asset.type === 'css' && asset.generated.js;
       });
-
-      if (handled) {
-        console.clear();
-        data.assets.forEach(function (asset) {
-          hmrApply(global.parcelRequire, asset);
-        });
-        assetsToAccept.forEach(function (v) {
-          hmrAcceptRun(v[0], v[1]);
-        });
-      } else if (location.reload) {
-        // `location` global exists in a web worker context but lacks `.reload()` function.
-        location.reload();
-      }
     }
 
     if (data.type === 'reload') {
@@ -334,7 +393,7 @@ function hmrApply(bundle, asset) {
   }
 }
 
-function hmrAcceptCheck(bundle, id) {
+function hmrAccept(bundle, id) {
   var modules = bundle.modules;
 
   if (!modules) {
@@ -342,27 +401,9 @@ function hmrAcceptCheck(bundle, id) {
   }
 
   if (!modules[id] && bundle.parent) {
-    return hmrAcceptCheck(bundle.parent, id);
+    return hmrAccept(bundle.parent, id);
   }
 
-  if (checkedAssets[id]) {
-    return;
-  }
-
-  checkedAssets[id] = true;
-  var cached = bundle.cache[id];
-  assetsToAccept.push([bundle, id]);
-
-  if (cached && cached.hot && cached.hot._acceptCallbacks.length) {
-    return true;
-  }
-
-  return getParents(global.parcelRequire, id).some(function (id) {
-    return hmrAcceptCheck(global.parcelRequire, id);
-  });
-}
-
-function hmrAcceptRun(bundle, id) {
   var cached = bundle.cache[id];
   bundle.hotData = {};
 
@@ -387,6 +428,10 @@ function hmrAcceptRun(bundle, id) {
 
     return true;
   }
+
+  return getParents(global.parcelRequire, id).some(function (id) {
+    return hmrAccept(global.parcelRequire, id);
+  });
 }
-},{}]},{},["../../../../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js","js/index.js"], null)
-//# sourceMappingURL=/js.00a46daa.js.map
+},{}]},{},["../../../../../../../usr/local/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js","js/index.js"], null)
+//# sourceMappingURL=/js.00a46daa.map

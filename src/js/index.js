@@ -1,5 +1,5 @@
 
-import { getElements } from './helpers'
+import { getElements, getDate } from './helpers'
 
 import { state, initializeState, checkState } from './state'
 import { list } from './list'
@@ -21,10 +21,35 @@ function onLoad() {
     getElements(dom);
     console.log(dom);
 
-    initializeState(state)
+    let state = initializeState()
+
+    console.log(state)
+
+    setupInput(dom)
 
 
-    // dom.
 
 }
 
+
+function setupInput(dom) {
+
+    dom.name_input.value = ""
+    dom.category_input.value = ""
+    dom.date_input.value = getDate()
+
+    dom.date_input.addEventListener('keydown', (e) => {
+        console.log(e.keyCode)
+        if (e.keyCode === 13) {
+            addNewNote(dom.name_input.value, dom.category_input.value,
+                dom.date_input.value)
+        }
+    })
+
+}
+
+
+function addNewNote(note, category, date) {
+    console.log(typeof (date))
+    console.log(note, category, date)
+}
