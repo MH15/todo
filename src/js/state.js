@@ -14,8 +14,3 @@ export function initializeState() {
     return state
 }
 
-
-export function checkState(state) {
-    state.key = "b"
-    // console.log(state)
-}

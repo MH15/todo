@@ -4,7 +4,10 @@
   "description": "a todo app that fits my style",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "./node_modules/.bin/eslint . --fix",
+    "dev": "parcel ./src/index.html --port 3000 --no-cache --open",
+    "prebuild": "rm -rf ./dist/",
+    "build": "parcel build ./src/index.html --no-content-hash --no-cache --public-url ./"
   },
   "repository": {
     "type": "git",
@@ -16,10 +19,7 @@
     "url": "https://github.com/MH15/todo/issues"
   },
   "homepage": "https://github.com/MH15/todo#readme",
-  "scripts": {
-    "lint": "./node_modules/.bin/eslint . --fix",
-    "dev": "parcel ./src/index.html --port 3000 --no-cache --open",
-    "prebuild": "rm -rf ./dist/",
-    "build": "parcel build ./src/index.html --no-content-hash --no-cache --public-url ./"
+  "devDependencies": {
+    "sass": "^1.26.0"
   }
 }

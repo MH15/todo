@@ -5,8 +5,6 @@
 //
 // anything defined in a previous bundle is accessed via the
 // orig method which is the require for previous bundles
-
-// eslint-disable-next-line no-global-assign
 parcelRequire = (function (modules, cache, entry, globalName) {
   // Save the require from previous bundle to this closure if any
   var previousRequire = typeof parcelRequire === 'function' && parcelRequire;
@@ -77,8 +75,16 @@ parcelRequire = (function (modules, cache, entry, globalName) {
     }, {}];
   };
 
+  var error;
   for (var i = 0; i < entry.length; i++) {
-    newRequire(entry[i]);
+    try {
+      newRequire(entry[i]);
+    } catch (e) {
+      // Save first error but execute all entries
+      if (!error) {
+        error = e;
+      }
+    }
   }
 
   if (entry.length) {
@@ -103,6 +109,13 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   }
 
   // Override the current require with this new one
+  parcelRequire = newRequire;
+
+  if (error) {
+    // throw error from earlier, _after updating parcelRequire_
+    throw error;
+  }
+
   return newRequire;
 })({"js/helpers.js":[function(require,module,exports) {
 "use strict";
@@ -115,6 +128,7 @@ exports.getLocalStorageItem = getLocalStorageItem;
 exports.setLocalStorageItem = setLocalStorageItem;
 exports.localStorageExists = localStorageExists;
 exports.getDate = getDate;
+exports.stringToHTML = stringToHTML;
 
 /**
  * Get Dom elements from an identifier-string key-value pair.
@@ -168,6 +182,20 @@ function getDate() {
   var dateString = "".concat(year, "-").concat(month, "-").concat(day);
   return dateString;
 }
+/**
+ * Convert a template string into HTML DOM nodes
+ * @param  {String} str The template string
+ * @return {Node}       The template HTML
+ */
+
+
+function stringToHTML(str) {
+  var parser = new DOMParser();
+  var doc = parser.parseFromString(str, 'text/html');
+  return doc.body;
+}
+
+;
 },{}],"js/globals.js":[function(require,module,exports) {
 "use strict";
 
@@ -178,7 +206,9 @@ exports.LOCALSTORAGE_TEMPLATE = exports.LOCALSTORAGE_NAME = void 0;
 var LOCALSTORAGE_NAME = "todo-list";
 exports.LOCALSTORAGE_NAME = LOCALSTORAGE_NAME;
 var LOCALSTORAGE_TEMPLATE = {
-  user: "mh15"
+  user: "mh15",
+  list: [],
+  categories: ["default", "CSE"]
 };
 exports.LOCALSTORAGE_TEMPLATE = LOCALSTORAGE_TEMPLATE;
 },{}],"js/state.js":[function(require,module,exports) {
@@ -188,7 +218,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.initializeState = initializeState;
-exports.checkState = checkState;
 
 var _helpers = require("./helpers");
 
@@ -206,10 +235,6 @@ function initializeState() {
 
   return state;
 }
-
-function checkState(state) {
-  state.key = "b"; // console.log(state)
-}
 },{"./helpers":"js/helpers.js","./globals":"js/globals.js"}],"js/list.js":[function(require,module,exports) {
 "use strict";
 
@@ -217,9 +242,139 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.insertInList = insertInList;
+exports.deleteFromList = deleteFromList;
+exports.newNote = newNote;
+exports.newNoteDOM = newNoteDOM;
 
-function insertInList(list, item) {}
-},{}],"js/index.js":[function(require,module,exports) {
+var _helpers = require("./helpers");
+
+// Insert note into sorted list and return position
+function insertInList(list, note) {
+  list.push(note);
+  var i = list.length - 1;
+
+  while (i > 0 && note.date < list[i - 1].date) {
+    list[i] = list[i - 1];
+    i -= 1;
+  }
+
+  list[i] = note;
+  return i;
+}
+
+function deleteFromList(list, note) {
+  console.log(note);
+  var i = 0;
+
+  while (i < list.length) {
+    if (list[i].date === note.date) {
+      if (list[i].content === note.content) {
+        if (list[i].category === note.category) {
+          console.log("found and deleted");
+          list.splice(i, 1);
+          break;
+        }
+      }
+    }
+
+    i++;
+  }
+
+  return i;
+}
+
+function newNote(noteString, categoryString, dateString) {
+  var dateObj = new Date(dateString);
+  var noteObj = {
+    content: noteString,
+    category: categoryString,
+    date: dateString
+  }; // TODO: insertion date?
+
+  return noteObj;
+}
+
+function newNoteDOM(noteObj, deleteCallback, checkCallback) {
+  var docString = "\n        <div class=\"note\">\n            <div class=\"date\">".concat(noteObj.date, "</div>\n            <div class=\"category\">").concat(noteObj.category, "</div>\n            <div class=\"content\">").concat(noteObj.content, "</div>\n            <button class=\"delete\">Delete</button>\n        </div>\n    ");
+  var node = (0, _helpers.stringToHTML)(docString);
+  node.querySelector(".delete").addEventListener('click', function () {
+    deleteCallback(noteObj);
+  });
+  return node;
+}
+},{"./helpers":"js/helpers.js"}],"../../../../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
+var bundleURL = null;
+
+function getBundleURLCached() {
+  if (!bundleURL) {
+    bundleURL = getBundleURL();
+  }
+
+  return bundleURL;
+}
+
+function getBundleURL() {
+  // Attempt to find the URL of the current script and use that as the base URL
+  try {
+    throw new Error();
+  } catch (err) {
+    var matches = ('' + err.stack).match(/(https?|file|ftp|chrome-extension|moz-extension):\/\/[^)\n]+/g);
+
+    if (matches) {
+      return getBaseURL(matches[0]);
+    }
+  }
+
+  return '/';
+}
+
+function getBaseURL(url) {
+  return ('' + url).replace(/^((?:https?|file|ftp|chrome-extension|moz-extension):\/\/.+)\/[^/]+$/, '$1') + '/';
+}
+
+exports.getBundleURL = getBundleURLCached;
+exports.getBaseURL = getBaseURL;
+},{}],"../../../../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/css-loader.js":[function(require,module,exports) {
+var bundle = require('./bundle-url');
+
+function updateLink(link) {
+  var newLink = link.cloneNode();
+
+  newLink.onload = function () {
+    link.remove();
+  };
+
+  newLink.href = link.href.split('?')[0] + '?' + Date.now();
+  link.parentNode.insertBefore(newLink, link.nextSibling);
+}
+
+var cssTimeout = null;
+
+function reloadCSS() {
+  if (cssTimeout) {
+    return;
+  }
+
+  cssTimeout = setTimeout(function () {
+    var links = document.querySelectorAll('link[rel="stylesheet"]');
+
+    for (var i = 0; i < links.length; i++) {
+      if (bundle.getBaseURL(links[i].href) === bundle.getBundleURL()) {
+        updateLink(links[i]);
+      }
+    }
+
+    cssTimeout = null;
+  }, 50);
+}
+
+module.exports = reloadCSS;
+},{"./bundle-url":"../../../../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/bundle-url.js"}],"sass/main.scss":[function(require,module,exports) {
+var reloadCSS = require('_css_loader');
+
+module.hot.dispose(reloadCSS);
+module.hot.accept(reloadCSS);
+},{"_css_loader":"../../../../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/css-loader.js"}],"js/index.js":[function(require,module,exports) {
 "use strict";
 
 var _helpers = require("./helpers");
@@ -228,7 +383,9 @@ var _state = require("./state");
 
 var _list = require("./list");
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+var _globals = require("./globals");
+
+require("../sass/main.scss");
 
 window.addEventListener("load", onLoad); // define DOM stuff
 
@@ -236,35 +393,89 @@ var dom = {
   list: "#list",
   name_input: "#name_input",
   category_input: "#category_input",
-  date_input: "#date_input"
+  date_input: "#date_input",
+  save: "#save"
 };
+var state; // link the state with the DOM for performant sorting
+
+var domLink = [];
 
 function onLoad() {
   (0, _helpers.getElements)(dom);
   console.log(dom);
-  var state = (0, _state.initializeState)();
+  state = (0, _state.initializeState)();
   console.log(state);
   setupInput(dom);
+  setupList(dom);
+  dom.save.addEventListener('click', function () {
+    (0, _helpers.setLocalStorageItem)(_globals.LOCALSTORAGE_NAME, state);
+  });
+}
+
+function setupList() {
+  state.list.forEach(function (note) {
+    var node = (0, _list.newNoteDOM)(note, deleteNode);
+    dom.list.appendChild(node);
+    domLink.push(node);
+  });
 }
 
 function setupInput(dom) {
   dom.name_input.value = "";
   dom.category_input.value = "";
+  var _iteratorNormalCompletion = true;
+  var _didIteratorError = false;
+  var _iteratorError = undefined;
+
+  try {
+    for (var _iterator = state.categories[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+      var category = _step.value;
+      var option = document.createElement("option");
+      option.value = category;
+      option.text = category;
+      dom.category_input.appendChild(option);
+    }
+  } catch (err) {
+    _didIteratorError = true;
+    _iteratorError = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion && _iterator.return != null) {
+        _iterator.return();
+      }
+    } finally {
+      if (_didIteratorError) {
+        throw _iteratorError;
+      }
+    }
+  }
+
   dom.date_input.value = (0, _helpers.getDate)();
   dom.date_input.addEventListener('keydown', function (e) {
-    console.log(e.keyCode);
-
     if (e.keyCode === 13) {
-      addNewNote(dom.name_input.value, dom.category_input.value, dom.date_input.value);
+      if (dom.name_input.value != "" && dom.category_input.value != "" && dom.date_input.value != "") {
+        var note = dom.name_input.value;
+        var category = dom.category_input.value;
+        var date = dom.date_input.value;
+        var noteObj = (0, _list.newNote)(note, category, date);
+        var pos = (0, _list.insertInList)(state.list, noteObj);
+        updateView(noteObj, pos);
+      }
     }
   });
 }
 
-function addNewNote(note, category, date) {
-  console.log(_typeof(date));
-  console.log(note, category, date);
+function updateView(noteObj, pos) {
+  var node = (0, _list.newNoteDOM)(noteObj, deleteNode);
+  dom.list.insertBefore(node, dom.list.children[pos]);
+  console.log("rendering");
 }
-},{"./helpers":"js/helpers.js","./state":"js/state.js","./list":"js/list.js"}],"../../../../../../../usr/local/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+
+function deleteNode(noteObj) {
+  var pos = (0, _list.deleteFromList)(state.list, noteObj);
+  dom.list.removeChild(dom.list.children[pos]);
+}
+},{"./helpers":"js/helpers.js","./state":"js/state.js","./list":"js/list.js","./globals":"js/globals.js","../sass/main.scss":"sass/main.scss"}],"../../../../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -286,26 +497,47 @@ function Module(moduleName) {
 }
 
 module.bundle.Module = Module;
+var checkedAssets, assetsToAccept;
 var parent = module.bundle.parent;
 
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55041" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "59488" + '/');
 
   ws.onmessage = function (event) {
+    checkedAssets = {};
+    assetsToAccept = [];
     var data = JSON.parse(event.data);
 
     if (data.type === 'update') {
-      console.clear();
-      data.assets.forEach(function (asset) {
-        hmrApply(global.parcelRequire, asset);
-      });
+      var handled = false;
       data.assets.forEach(function (asset) {
         if (!asset.isNew) {
-          hmrAccept(global.parcelRequire, asset.id);
+          var didAccept = hmrAcceptCheck(global.parcelRequire, asset.id);
+
+          if (didAccept) {
+            handled = true;
+          }
         }
+      }); // Enable HMR for CSS by default.
+
+      handled = handled || data.assets.every(function (asset) {
+        return asset.type === 'css' && asset.generated.js;
       });
+
+      if (handled) {
+        console.clear();
+        data.assets.forEach(function (asset) {
+          hmrApply(global.parcelRequire, asset);
+        });
+        assetsToAccept.forEach(function (v) {
+          hmrAcceptRun(v[0], v[1]);
+        });
+      } else if (location.reload) {
+        // `location` global exists in a web worker context but lacks `.reload()` function.
+        location.reload();
+      }
     }
 
     if (data.type === 'reload') {
@@ -393,7 +625,7 @@ function hmrApply(bundle, asset) {
   }
 }
 
-function hmrAccept(bundle, id) {
+function hmrAcceptCheck(bundle, id) {
   var modules = bundle.modules;
 
   if (!modules) {
@@ -401,9 +633,27 @@ function hmrAccept(bundle, id) {
   }
 
   if (!modules[id] && bundle.parent) {
-    return hmrAccept(bundle.parent, id);
+    return hmrAcceptCheck(bundle.parent, id);
   }
 
+  if (checkedAssets[id]) {
+    return;
+  }
+
+  checkedAssets[id] = true;
+  var cached = bundle.cache[id];
+  assetsToAccept.push([bundle, id]);
+
+  if (cached && cached.hot && cached.hot._acceptCallbacks.length) {
+    return true;
+  }
+
+  return getParents(global.parcelRequire, id).some(function (id) {
+    return hmrAcceptCheck(global.parcelRequire, id);
+  });
+}
+
+function hmrAcceptRun(bundle, id) {
   var cached = bundle.cache[id];
   bundle.hotData = {};
 
@@ -428,10 +678,6 @@ function hmrAccept(bundle, id) {
 
     return true;
   }
-
-  return getParents(global.parcelRequire, id).some(function (id) {
-    return hmrAccept(global.parcelRequire, id);
-  });
 }
-},{}]},{},["../../../../../../../usr/local/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js","js/index.js"], null)
-//# sourceMappingURL=/js.00a46daa.map
+},{}]},{},["../../../../../../AppData/Roaming/npm/node_modules/parcel-bundler/src/builtins/hmr-runtime.js","js/index.js"], null)
+//# sourceMappingURL=/js.00a46daa.js.map
