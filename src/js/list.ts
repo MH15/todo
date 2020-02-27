@@ -1,10 +1,19 @@
 import { Note } from "./globals"
 import { stringToHTML, dateMMDD } from "./helpers"
+import { newNoteDOM } from "./index"
 
 export enum Update {
     Date = 1,
     Category,
     Content
+}
+
+
+export function setupList(state, dom) {
+    state.list.forEach(note => {
+        let node = newNoteDOM(note)
+        dom.list.appendChild(node)
+    })
 }
 
 // Insert note into sorted list and return position

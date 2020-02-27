@@ -1,6 +1,12 @@
 import { getElements, getLocalStorageItem, localStorageExists, setLocalStorageItem } from './helpers'
-import { LOCALSTORAGE_NAME, LOCALSTORAGE_TEMPLATE, State } from './globals'
+import { LOCALSTORAGE_NAME, LOCALSTORAGE_TEMPLATE, Note } from './globals'
 
+
+export interface State {
+    user: string,
+    list: Array<Note>,
+    categories: Array<string>
+}
 
 
 export function initializeState(): State {

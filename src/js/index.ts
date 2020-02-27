@@ -1,11 +1,13 @@
 
-import { getElements, getDate, setLocalStorageItem, dateMMDD, stringToHTML } from './helpers'
+import { getDate, setLocalStorageItem, dateMMDD, stringToHTML } from './helpers'
 
-import { initializeState } from './state'
-import { insertInList, newNote, deleteFromList, findInList, Update } from './list'
-import { LOCALSTORAGE_NAME, Note, State } from './globals'
+import { State, initializeState } from './state'
+import { insertInList, newNote, deleteFromList, findInList, Update, setupList } from './list'
+import { LOCALSTORAGE_NAME, Note } from './globals'
 
 import "../sass/main.scss"
+import { deleteNote, checkNote, insertNote, editCallback } from './transforms'
+import { populateCategories, getElements } from './view'
 
 
 window.addEventListener("load", onLoad)
@@ -23,28 +25,27 @@ let domLink = {
     update: "#update"
 }
 
-
+// globals
 let state: State
-// link the state with the DOM for performant sorting
 let dom
-
-let updateMode = false
-
 let workingNote: Note
 
 
 
 function onLoad() {
+    // find all relevant dom elements
     dom = getElements(domLink)
-    console.log(dom)
 
+    // get the state from localstorage or server
     state = initializeState()
 
-    console.log(state)
+    // categories
 
 
+    // set up input areas
     setupInput()
-    setupList()
+    // populate current notes
+    setupList(state, dom)
 
     dom.save.addEventListener('click', () => {
         setLocalStorageItem(LOCALSTORAGE_NAME, state)
@@ -52,31 +53,15 @@ function onLoad() {
 
 }
 
-function setupList() {
-    state.list.forEach(note => {
-        let node = newNoteDOM(note)
-        dom.list.appendChild(node)
-    })
-}
-
-function populateCategories(parent: HTMLSelectElement) {
-    for (let category of state.categories) {
-        let option = document.createElement("option")
-        option.value = category
-        option.text = category
-        parent.appendChild(option)
-    }
-}
-
-
-function setupInput() {
-
+export function setupInput() {
+    let dom
+    dom = getElements(domLink)
 
     dom.name_input.value = ""
     dom.category_input.value = ""
 
 
-    populateCategories(dom.category_input)
+    populateCategories(state, dom.category_input)
 
 
 
@@ -92,8 +77,7 @@ function setupInput() {
                 let date = dom.date_input.value
 
                 let noteObj = newNote(note, category, date)
-                let pos = insertInList(state.list, noteObj)
-                updateView(noteObj, pos)
+                insertNote(state.list, dom, noteObj)
 
             }
         }
@@ -108,13 +92,14 @@ function setupInput() {
                 let category = dom.category_update.value
                 let date = dom.date_update.value
 
-                deleteCallback(workingNote)
+                // to update a note we delete the old note then insert the new
+                // note to make sure total preorder is maintained
+                deleteNote(state.list, dom, workingNote)
 
                 let updatedNote = newNote(note, category, date)
                 updatedNote.done = workingNote.done
 
-                let pos = insertInList(state.list, updatedNote)
-                updateView(updatedNote, pos)
+                insertNote(state.list, dom, updatedNote)
 
 
                 console.log(workingNote)
@@ -125,28 +110,11 @@ function setupInput() {
         }
     })
 
-
-}
-
-
-function updateView(noteObj, pos) {
-    let node = newNoteDOM(noteObj)
-    dom.list.insertBefore(node, dom.list.children[pos])
-    console.log("rendering")
-}
-
-
-function deleteCallback(noteObj: Note) {
-    let pos = deleteFromList(state.list, noteObj)
-    console.log(pos)
-    dom.list.removeChild(dom.list.children[pos])
 }
 
 
 
-
-
-function newNoteDOM(noteObj: Note) {
+export function newNoteDOM(noteObj: Note) {
 
 
     let docString = `
@@ -164,7 +132,6 @@ function newNoteDOM(noteObj: Note) {
             </div>
             <input class="hidden content content_update" placeholder="note">
             <button class="delete">Delete</button>
-            <button class="edit">Edit</button>
         </div>
     `
     let node = stringToHTML(docString)
@@ -175,51 +142,32 @@ function newNoteDOM(noteObj: Note) {
     }
 
     node.querySelector(".delete").addEventListener('click', () => {
-        deleteCallback(noteObj)
+        deleteNote(state.list, dom, noteObj)
     })
 
     check.addEventListener('change', (e) => {
         let status = check.value
         console.log(status)
-        checkCallback(noteObj)
+        checkNote(state.list, noteObj)
     })
 
     node.querySelector(".content_text").addEventListener('click', () => {
-        editCallback(noteObj, Update.Content)
+        editCallback(state, dom, noteObj)
     })
 
     node.querySelector(".date_text").addEventListener('click', () => {
-        editCallback(noteObj, Update.Date)
+        workingNote = noteObj
+        editCallback(state, dom, noteObj)
     })
 
     node.querySelector(".category_text").addEventListener('click', () => {
-        editCallback(noteObj, Update.Category)
+        editCallback(state, dom, noteObj)
     })
 
 
     return node
 }
 
-function editCallback(note: Note, mode: Update) {
-    // console.log("edit", noteObj)
-    let pos = findInList(state.list, note)
-    let node = <HTMLElement>dom.list.children[pos]
 
-    dom.update.classList.toggle("hidden")
 
-    populateCategories(dom.category_update)
 
-    dom.date_update.value = note.date
-    dom.category_update.value = note.category
-    dom.content_update.value = note.content
-
-    workingNote = note
-
-}
-
-function checkCallback(noteObj: Note) {
-    let pos = findInList(state.list, noteObj)
-    noteObj.done = !noteObj.done
-
-    state.list[pos] = noteObj
-}

@@ -1,17 +1,6 @@
 
 
-/**
- * Get Dom elements from an identifier-string key-value pair.
- * @param {Object} map 
- */
-export function getElements(map) {
-    let link = {}
-    Object.keys(map).forEach((item) => {
-        let domNode = <HTMLElement>document.querySelector(map[item])
-        link[item] = domNode
-    })
-    return link
-}
+
 
 /**
  * Get object from Local Storage.
