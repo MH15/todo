@@ -7,7 +7,7 @@
 export function getElements(map) {
     let link = {}
     Object.keys(map).forEach((item) => {
-        let domNode = document.querySelector(map[item])
+        let domNode = <HTMLElement>document.querySelector(map[item])
         link[item] = domNode
     })
     return link
@@ -54,7 +54,7 @@ export function getDate() {
 export function dateMMDD(dateString) {
     let date = new Date(dateString)
     let month = (date.getMonth() + 1).toString()
-    let day = (date.getDate()).toString()
+    let day = (date.getDate() + 1).toString()
     let result = `${month}/${day}`
 
     return result
@@ -75,3 +75,4 @@ export function stringToHTML(str) {
     // console.log(typeof doc.body.children[0])
     return doc.body.children[0]
 };
+

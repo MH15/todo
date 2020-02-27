@@ -1,6 +1,12 @@
 import { Note } from "./globals"
 import { stringToHTML, dateMMDD } from "./helpers"
 
+export enum Update {
+    Date = 1,
+    Category,
+    Content
+}
+
 // Insert note into sorted list and return position
 export function insertInList(list: Array<Note>, note: Note) {
     list.push(note)
@@ -61,40 +67,3 @@ export function newNote(noteString, categoryString, dateString): Note {
 }
 
 
-export function newNoteDOM(noteObj: Note, deleteCallback, checkCallback, editCallback) {
-
-
-    let docString = `
-        <div class="note">
-            <input type="checkbox" class="done">
-            <div class="date">${dateMMDD(noteObj.date)}</div>
-            <div class="category">${noteObj.category}</div>
-            <div class="content">${noteObj.content}</div>
-            <button class="delete">Delete</button>
-            <button class="edit">Edit</button>
-        </div>
-    `
-    let node = stringToHTML(docString)
-
-    let check = <HTMLInputElement>node.querySelector(".done")
-    if (noteObj.done) {
-        check.checked = true
-    }
-
-    node.querySelector(".delete").addEventListener('click', () => {
-        deleteCallback(noteObj)
-    })
-
-    check.addEventListener('change', (e) => {
-        let status = check.value
-        console.log(status)
-        checkCallback(noteObj)
-    })
-
-    node.querySelector(".edit").addEventListener('click', () => {
-        editCallback(noteObj)
-    })
-
-
-    return node
-}
