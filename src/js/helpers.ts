@@ -5,10 +5,12 @@
  * @param {Object} map 
  */
 export function getElements(map) {
+    let link = {}
     Object.keys(map).forEach((item) => {
         let domNode = document.querySelector(map[item])
-        map[item] = domNode
+        link[item] = domNode
     })
+    return link
 }
 
 /**
@@ -24,7 +26,7 @@ export function getLocalStorageItem(item) {
  * @param {string} item
  */
 export function setLocalStorageItem(item, value) {
-    return window.localStorage.setItem(`${item}`, JSON.stringify(value));
+    return window.localStorage.setItem(`${item}`, JSON.stringify(value))
 };
 
 /**
@@ -40,13 +42,23 @@ export function localStorageExists(item) {
  * Get current date in YYYY-MM-DD format.
  */
 export function getDate() {
-    let date = new Date();
+    let date = new Date()
     let year = date.getFullYear()
     let month = (date.getMonth() + 1).toString().padStart(2, '0')
     let day = (date.getDate()).toString().padStart(2, '0')
     let dateString = `${year}-${month}-${day}`
 
     return dateString
+}
+
+export function dateMMDD(dateString) {
+    let date = new Date(dateString)
+    let month = (date.getMonth() + 1).toString()
+    let day = (date.getDate()).toString()
+    let result = `${month}/${day}`
+
+    return result
+
 }
 
 
@@ -57,7 +69,9 @@ export function getDate() {
  * @return {Node}       The template HTML
  */
 export function stringToHTML(str) {
-    var parser = new DOMParser();
-    var doc = parser.parseFromString(str, 'text/html');
-    return doc.body;
+    var parser = new DOMParser()
+    var doc = parser.parseFromString(str, 'text/html')
+    // console.log(doc.body.children[0])
+    // console.log(typeof doc.body.children[0])
+    return doc.body.children[0]
 };

@@ -2,16 +2,16 @@
 import { getElements, getDate, setLocalStorageItem } from './helpers'
 
 import { initializeState } from './state'
-import { list, insertInList, newNote, newNoteDOM, deleteFromList } from './list'
-import { LOCALSTORAGE_NAME } from './globals';
+import { insertInList, newNote, newNoteDOM, deleteFromList, findInList } from './list'
+import { LOCALSTORAGE_NAME, Note, State } from './globals'
 
 import "../sass/main.scss"
 
 
-window.addEventListener("load", onLoad);
+window.addEventListener("load", onLoad)
 
 // define DOM stuff
-let dom = {
+let domLink = {
     list: "#list",
     name_input: "#name_input",
     category_input: "#category_input",
@@ -20,23 +20,23 @@ let dom = {
 }
 
 
-let state
+let state: State
 // link the state with the DOM for performant sorting
-let domLink = []
+let dom
 
 
 
 function onLoad() {
-    getElements(dom);
-    console.log(dom);
+    dom = getElements(domLink)
+    console.log(dom)
 
     state = initializeState()
 
     console.log(state)
 
 
-    setupInput(dom)
-    setupList(dom)
+    setupInput()
+    setupList()
 
     dom.save.addEventListener('click', () => {
         setLocalStorageItem(LOCALSTORAGE_NAME, state)
@@ -46,14 +46,13 @@ function onLoad() {
 
 function setupList() {
     state.list.forEach(note => {
-        let node = newNoteDOM(note, deleteNode)
+        let node = newNoteDOM(note, deleteNote, checkNote, editCallback)
         dom.list.appendChild(node)
-        domLink.push(node)
-    });
+    })
 }
 
 
-function setupInput(dom) {
+function setupInput() {
 
     dom.name_input.value = ""
     dom.category_input.value = ""
@@ -87,13 +86,24 @@ function setupInput(dom) {
 
 
 function updateView(noteObj, pos) {
-    let node = newNoteDOM(noteObj, deleteNode)
+    let node = newNoteDOM(noteObj, deleteNote, checkNote, editCallback)
     dom.list.insertBefore(node, dom.list.children[pos])
     console.log("rendering")
 }
 
 
-function deleteNode(noteObj) {
+function deleteNote(noteObj: Note) {
     let pos = deleteFromList(state.list, noteObj)
     dom.list.removeChild(dom.list.children[pos])
+}
+
+function checkNote(noteObj: Note) {
+    let pos = findInList(state.list, noteObj)
+    noteObj.done = !noteObj.done
+
+    state.list[pos] = noteObj
+}
+
+function editCallback(noteObj: Note) {
+    console.log("edit", noteObj)
 }

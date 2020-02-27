@@ -1,1 +1,22 @@
-@import "./reset.scss"
+@use "./reset.scss";
+
+#list {
+    width: 50%;
+    height: auto;
+
+    .note {
+        display: flex;
+        .date {
+            text-align: right;
+            width: 50px;
+        }
+        .category {
+            padding-left: 5px;
+            width: 50px;
+        }
+        .content {
+            flex: 1;
+            padding-left: 5px;
+        }
+    }
+}
