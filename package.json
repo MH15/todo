@@ -22,5 +22,8 @@
   "devDependencies": {
     "sass": "^1.26.1",
     "typescript": "^3.8.2"
+  },
+  "dependencies": {
+    "cli-spinners": "^2.2.0"
   }
 }

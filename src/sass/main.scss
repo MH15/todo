@@ -1,9 +1,29 @@
 @use "./reset.scss";
 
-#list {
-    width: 50%;
-    height: auto;
+* {
+    box-sizing: border-box;
+    // border: 1px solid rgba(1,0,0,0.5) !important;
+}
 
+body {
+    font-family: 'Courier New', Courier, monospace;
+}
+
+#main {
+
+    width: 60%;
+    height: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+}
+
+#editor {
+
+    flex: 1;
+    overflow-y: auto;
+}
+#list {
     .note {
         display: flex;
         .date {
@@ -12,7 +32,7 @@
         }
         .category {
             padding-left: 5px;
-            width: 50px;
+            width: 60px;
         }
         .content {
             flex: 1;
@@ -23,4 +43,35 @@
 
 .hidden {
     display: none;
+}
+
+header {
+    margin-top: 15px;
+    margin-bottom: 5px;
+    padding-bottom: 5px;
+    display: flex;
+    border-bottom: 2px solid black;
+    h1 {
+        font-weight: bold;
+    }
+    #menu {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+
+        .menu-item {
+            text-decoration: underline;
+            padding-right: 6px;
+            cursor: pointer;
+        }
+        .menu-item:active {
+            color: blue;
+        }
+    }
+}
+
+footer {
+    padding-bottom: 8px;
+    padding-top: 8px;
+    border-top: 2px solid black
 }

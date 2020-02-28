@@ -6,31 +6,47 @@
 
 
 <body>
-    <div id="list">
-        list
+    <div id="main">
+        <header>
+            <!-- app name, menu, save indicator, etc -->
+            <h1>App Name</h1>
+            <div id="menu">
+                <div class="menu-item">Planner</div>
+                <div class="menu-item">Categories</div>
+                <div class="menu-item">Settings</div>
+            </div>
+            Status: <div id="spinner"></div>
+        </header>
+        <div id="editor">
+            <div id="list">
+            </div>
+
+
+
+            <div id="update" class="hidden">
+                Update
+                <input id="content_update" placeholder="note">
+                <select id="category_update">
+                    <!-- options added programatically -->
+                </select>
+                <input id="date_update" placeholder="date" type="date">
+            </div>
+
+
+            <button id="save">Save</button>
+        </div>
+        <footer>
+            <!-- info and link to source files -->
+            <div id="input">
+                New
+                <input id="name_input" placeholder="note">
+                <select id="category_input">
+                    <!-- options added programatically -->
+                </select>
+                <input id="date_input" placeholder="date" type="date">
+            </div>
+        </footer>
     </div>
-
-    <div id="input">
-        New
-        <input id="name_input" placeholder="note">
-        <select id="category_input">
-            <!-- options added programatically -->
-        </select>
-        <input id="date_input" placeholder="date" type="date">
-    </div>
-
-    <div id="update" class="hidden">
-        Update
-        <input id="content_update" placeholder="note">
-        <select id="category_update">
-            <!-- options added programatically -->
-        </select>
-        <input id="date_update" placeholder="date" type="date">
-    </div>
-
-
-    <button id="save">Save</button>
-
     <script src="/js.52877fb3.js"></script>
 </body>
 

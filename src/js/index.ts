@@ -7,7 +7,7 @@ import { LOCALSTORAGE_NAME, Note } from './globals'
 
 import "../sass/main.scss"
 import { deleteNote, checkNote, insertNote, editCallback } from './transforms'
-import { populateCategories, getElements } from './view'
+import { populateCategories, getElements, startSpinner, stopSpinner } from './view'
 
 
 window.addEventListener("load", onLoad)
@@ -22,7 +22,8 @@ let domLink = {
     category_update: "#category_update",
     date_update: "#date_update",
     save: "#save",
-    update: "#update"
+    update: "#update",
+    spinner: "#spinner"
 }
 
 // globals
@@ -35,11 +36,14 @@ let workingNote: Note
 function onLoad() {
     // find all relevant dom elements
     dom = getElements(domLink)
+    let timer = startSpinner(dom.spinner)
+    stopSpinner(dom.spinner, timer)
 
     // get the state from localstorage or server
     state = initializeState()
 
     // categories
+
 
 
     // set up input areas
@@ -102,8 +106,6 @@ export function setupInput() {
                 insertNote(state.list, dom, updatedNote)
 
 
-                console.log(workingNote)
-
                 dom.update.classList.toggle("hidden")
                 workingNote = updatedNote // or null
             }
@@ -152,6 +154,7 @@ export function newNoteDOM(noteObj: Note) {
     })
 
     node.querySelector(".content_text").addEventListener('click', () => {
+        workingNote = noteObj
         editCallback(state, dom, noteObj)
     })
 
@@ -161,6 +164,7 @@ export function newNoteDOM(noteObj: Note) {
     })
 
     node.querySelector(".category_text").addEventListener('click', () => {
+        workingNote = noteObj
         editCallback(state, dom, noteObj)
     })
 

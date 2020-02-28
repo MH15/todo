@@ -1,14 +1,28 @@
 import { State } from "./state"
-import { getDate } from "./helpers"
-import { newNote } from "./list"
-import { insertNote, deleteNote } from "./transforms"
-
+const spinners = require("cli-spinners")
 // setup and handle input in the application
 
 
 
+export function startSpinner(node) {
+    console.log(spinners.dots)
+    let i = 0
+    node.innerHTML = spinners.dots.frames[i]
+    return window.setInterval(() => {
+        if (i < spinners.dots.frames.length - 1) {
 
+            i++
+        } else {
+            i = 0
+        }
+        node.innerHTML = spinners.dots.frames[i]
+    }, 80)
+}
 
+export function stopSpinner(node, timer) {
+    window.clearInterval(timer)
+    node.innerHTML = "✓"
+}
 
 
 /**
