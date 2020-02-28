@@ -11,41 +11,54 @@
             <!-- app name, menu, save indicator, etc -->
             <h1>App Name</h1>
             <div id="menu">
-                <div class="menu-item">Planner</div>
-                <div class="menu-item">Categories</div>
-                <div class="menu-item">Settings</div>
+                <div class="menu-item" id="menu_planner">Planner</div>
+                <div class="menu-item" id="menu_categories">Categories</div>
+                <div class="menu-item" id="menu_settings">Settings</div>
             </div>
             Status: <div id="spinner"></div>
         </header>
-        <div id="editor">
-            <div id="list">
+        <div id="tabs">
+            <div class="tab" id="planner_tab">
+                <div id="list"></div>
+
+                <footer>
+                    <button id="save">Save</button>
+                    <!-- info and link to source files -->
+                    <div id="input">
+                        New
+                        <input id="name_input" placeholder="note">
+                        <select id="category_input">
+                            <!-- options added programatically -->
+                        </select>
+                        <input id="date_input" placeholder="date" type="date">
+                    </div>
+                    <div id="update" class="hidden">
+                        Update
+                        <input id="content_update" placeholder="note">
+                        <select id="category_update">
+                            <!-- options added programatically -->
+                        </select>
+                        <input id="date_update" placeholder="date" type="date">
+                    </div>
+                </footer>
             </div>
-
-
-
-            <div id="update" class="hidden">
-                Update
-                <input id="content_update" placeholder="note">
-                <select id="category_update">
-                    <!-- options added programatically -->
-                </select>
-                <input id="date_update" placeholder="date" type="date">
+            <div class="tab hidden" id="categories_tab">
+                <p>Enter categories separated by commas in the textarea below.</p>
+                <div>
+                    <textarea name="categories" id="category_setup" cols="30" rows="10"></textarea>
+                    <button>Update</button>
+                </div>
             </div>
-
-
-            <button id="save">Save</button>
+            <div class="tab hidden" id="settings_tab">
+                <p>Planner saves to server by passing username and API key every
+                    time. Enter them below, or continue saving to localstorage</p>
+                <div>
+                    <input placeholder="Username">
+                    <input placeholder="API Key">
+                </div>
+            </div>
         </div>
-        <footer>
-            <!-- info and link to source files -->
-            <div id="input">
-                New
-                <input id="name_input" placeholder="note">
-                <select id="category_input">
-                    <!-- options added programatically -->
-                </select>
-                <input id="date_input" placeholder="date" type="date">
-            </div>
-        </footer>
+
     </div>
     <script src="/js.52877fb3.js"></script>
 </body>

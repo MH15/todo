@@ -8,6 +8,10 @@ import { LOCALSTORAGE_NAME, Note } from './globals'
 import "../sass/main.scss"
 import { deleteNote, checkNote, insertNote, editCallback } from './transforms'
 import { populateCategories, getElements, startSpinner, stopSpinner } from './view'
+import { planner } from './planner'
+
+
+
 
 
 window.addEventListener("load", onLoad)
@@ -23,17 +27,34 @@ let domLink = {
     date_update: "#date_update",
     save: "#save",
     update: "#update",
-    spinner: "#spinner"
+    spinner: "#spinner",
+    planner_tab: "#planner_tab",
+    categories_tab: "#categories_tab",
+    settings_tab: "#settings_tab",
+    menu_planner: "#menu_planner",
+    menu_categories: "#menu_categories",
+    menu_settings: "#menu_settings"
+}
+
+enum Tab {
+    Planner = 1,
+    Categories,
+    Settings
 }
 
 // globals
 let state: State
 let dom
 let workingNote: Note
-
+let tab = Tab.Planner
 
 
 function onLoad() {
+
+    planner()
+    categories()
+    settings()
+
     // find all relevant dom elements
     dom = getElements(domLink)
     let timer = startSpinner(dom.spinner)
@@ -55,6 +76,36 @@ function onLoad() {
         setLocalStorageItem(LOCALSTORAGE_NAME, state)
     })
 
+    dom.menu_planner.addEventListener('click', () => {
+        changeTab(Tab.Planner)
+    })
+    dom.menu_categories.addEventListener('click', () => {
+        changeTab(Tab.Categories)
+    })
+    dom.menu_settings.addEventListener('click', () => {
+        changeTab(Tab.Settings)
+    })
+}
+
+
+function changeTab(tab: Tab) {
+    switch (tab) {
+        case Tab.Planner:
+            dom.planner_tab.classList.remove("hidden")
+            dom.categories_tab.classList.add("hidden")
+            dom.settings_tab.classList.add("hidden")
+            break
+        case Tab.Categories:
+            dom.planner_tab.classList.add("hidden")
+            dom.categories_tab.classList.remove("hidden")
+            dom.settings_tab.classList.add("hidden")
+            break
+        case Tab.Settings:
+            dom.planner_tab.classList.add("hidden")
+            dom.categories_tab.classList.add("hidden")
+            dom.settings_tab.classList.remove("hidden")
+
+    }
 }
 
 export function setupInput() {
