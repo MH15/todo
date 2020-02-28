@@ -1,19 +1,10 @@
-import { State } from "./state"
+import { StateType } from "./state"
 
 export const LOCALSTORAGE_NAME = "todo-list"
 
-export interface Note {
-    content: string,
-    category: string,
-    date: string,
-    done: boolean
-}
 
 
-
-
-
-export const LOCALSTORAGE_TEMPLATE: State = {
+export const LOCALSTORAGE_TEMPLATE: StateType = {
     user: "mh15",
     list: [
 
@@ -24,7 +15,7 @@ export const LOCALSTORAGE_TEMPLATE: State = {
     ]
 }
 
-export const LOCALSTORAGE_TEMPLATE_LARGE: State = {
+export const LOCALSTORAGE_TEMPLATE_LARGE: StateType = {
     user: "mh15",
     list: [
         {

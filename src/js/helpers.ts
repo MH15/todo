@@ -1,6 +1,14 @@
+import { StateType } from "./state"
+const spinners = require("cli-spinners")
 
 
-
+/**
+ * Confirm a user's action using the native dialogs.
+ * @param text 
+ */
+export function confirm(text) {
+    return window.confirm(text)
+};
 
 /**
  * Get object from Local Storage.
@@ -26,7 +34,6 @@ export function localStorageExists(item) {
     return !(window.localStorage.getItem(item) === null)
 };
 
-
 /**
  * Get current date in YYYY-MM-DD format.
  */
@@ -40,6 +47,10 @@ export function getDate() {
     return dateString
 }
 
+/**
+ * Get date in MM-DD format given a YYYY-MM-DD date string.
+ * @param dateString 
+ */
 export function dateMMDD(dateString) {
     let date = new Date(dateString)
     let month = (date.getMonth() + 1).toString()
@@ -49,8 +60,6 @@ export function dateMMDD(dateString) {
     return result
 
 }
-
-
 
 /**
  * Convert a template string into HTML DOM nodes
@@ -65,3 +74,55 @@ export function stringToHTML(str) {
     return doc.body.children[0]
 };
 
+/**
+ * Get Dom elements from an identifier-string key-value pair.
+ * @param {Object} map 
+ */
+export function getElements(map) {
+    let link = {}
+    Object.keys(map).forEach((item) => {
+        let domNode = <HTMLElement>document.querySelector(map[item])
+        link[item] = domNode
+    })
+    return link
+}
+
+/**
+ * Populate category selector from state.
+ * @param state 
+ * @param parent 
+ */
+export function populateCategories(state: StateType, parent: HTMLSelectElement) {
+    for (let category of state.categories) {
+        let option = document.createElement("option")
+        option.value = category
+        option.text = category
+        parent.appendChild(option)
+    }
+}
+
+export class Spinner {
+    node: HTMLElement
+    timer
+    constructor(node: HTMLElement) {
+        this.node = node
+        this.stop()
+    }
+    start() {
+        let i = 0
+        this.node.innerHTML = spinners.dots.frames[i]
+        return window.setInterval(() => {
+            if (i < spinners.dots.frames.length - 1) {
+
+                i++
+            } else {
+                i = 0
+            }
+            this.node.innerHTML = spinners.dots.frames[i]
+        }, 80)
+    }
+    stop() {
+        window.clearInterval(this.timer)
+        this.node.innerHTML = "✓"
+    }
+}

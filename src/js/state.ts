@@ -1,8 +1,8 @@
+import { LOCALSTORAGE_NAME, LOCALSTORAGE_TEMPLATE_LARGE } from './globals'
 import { getLocalStorageItem, localStorageExists, setLocalStorageItem } from './helpers'
-import { LOCALSTORAGE_NAME, LOCALSTORAGE_TEMPLATE, Note, LOCALSTORAGE_TEMPLATE_LARGE } from './globals'
 
 
-export interface State {
+export interface StateType {
     user: string,
     list: Array<Note>,
     categories: Array<string>
@@ -12,13 +12,13 @@ export interface State {
  * Ensure categories are unique in a set.
  * @param state 
  */
-function initializeCategories(state: State) {
+function initializeCategories(state: StateType) {
     let set = new Set(state.categories)
     state.categories = Array.from(set)
 }
 
 
-export function initializeState(): State {
+export function initializeState(): StateType {
     let state
     if (!localStorageExists(LOCALSTORAGE_NAME)) {
         console.log("First session. Copy LOCALSTORAGE_TEMPLATE to store.")
@@ -31,4 +31,13 @@ export function initializeState(): State {
 
     return state
 }
+
+export interface Note {
+    content: string,
+    category: string,
+    date: string,
+    done: boolean
+}
+
+export let state = initializeState()
 

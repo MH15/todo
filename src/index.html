@@ -9,7 +9,7 @@
     <div id="main">
         <header>
             <!-- app name, menu, save indicator, etc -->
-            <h1>App Name</h1>
+            <h1>Todo</h1>
             <div id="menu">
                 <div class="menu-item" id="menu_planner">Planner</div>
                 <div class="menu-item" id="menu_categories">Categories</div>
@@ -43,10 +43,11 @@
                 </footer>
             </div>
             <div class="tab hidden" id="categories_tab">
-                <p>Enter categories separated by commas in the textarea below.</p>
+                <p>Enter categories separated by commas in the textarea below.
+                    Whitespace is ignored, capitalization is respected.</p>
                 <div>
                     <textarea name="categories" id="category_setup" cols="30" rows="10"></textarea>
-                    <button>Update</button>
+                    <button id="save_categories">Update</button>
                 </div>
             </div>
             <div class="tab hidden" id="settings_tab">
@@ -56,6 +57,9 @@
                     <input placeholder="Username">
                     <input placeholder="API Key">
                 </div>
+                <br>
+                <p>Built using <a href="https://parceljs.org">Parcel JS</a> and
+                    <a href="https://typescriptlang.org/">Typescript.</a></p>
             </div>
         </div>
 

@@ -1,6 +1,5 @@
-import { Note } from "./globals"
-import { stringToHTML, dateMMDD } from "./helpers"
-import { newNoteDOM } from "./index"
+import { newNoteDOM } from "./planner"
+import { Note } from "./state"
 
 export enum Update {
     Date = 1,

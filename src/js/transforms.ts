@@ -1,8 +1,8 @@
-import { Note } from "./globals"
+import { Note } from "./state"
 import { deleteFromList, findInList, insertInList } from "./list"
-import { newNoteDOM } from "./index"
-import { populateCategories } from "./view"
-import { State } from "./state"
+import { newNoteDOM } from "./planner"
+import { populateCategories } from "./helpers"
+import { StateType } from "./state"
 
 // Transformations for the Todo list like delete, edit, insert etc
 
@@ -26,9 +26,12 @@ export function insertNote(list: Array<Note>, dom, note: Note) {
  * @param note 
  */
 export function deleteNote(list: Array<Note>, dom, note: Note) {
-    let pos = deleteFromList(list, note)
-    console.log(pos)
-    dom.list.removeChild(dom.list.children[pos])
+    if (confirm("Are you sure you want to delete this item?")) {
+        let pos = deleteFromList(list, note)
+        console.log(pos)
+        dom.list.removeChild(dom.list.children[pos])
+
+    }
 }
 
 /**
@@ -43,7 +46,7 @@ export function checkNote(list: Array<Note>, note: Note) {
     list[pos] = note
 }
 
-export function editCallback(state: State, dom, note: Note) {
+export function editCallback(state: StateType, dom, note: Note) {
     // console.log("edit", noteObj)
     let pos = findInList(state.list, note)
 
