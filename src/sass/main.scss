@@ -1,5 +1,4 @@
 @use "./reset.scss";
-@import url('https://fonts.googleapis.com/css?family=Fira+Code:300,400,500,600,700&display=swap');
 
 * {
     box-sizing: border-box;
@@ -11,7 +10,7 @@ body {
 
 
     font-family: 'Fira Code', Consolas, monospace;
-    font-weight: 300;
+    font-weight: 400;
 
 
 }
@@ -19,26 +18,55 @@ body {
 #main {
 
     width: 60%;
+    min-width: 500px;
     height: 100%;
     margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+
+
+    header {
+        margin-top: 15px;
+        margin-bottom: 5px;
+        padding-bottom: 5px;
+        display: flex;
+        border-bottom: 2px solid black;
+        h1 {
+            font-weight: bold;
+        }
+        #menu {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+
+            .menu-item {
+                text-decoration: underline;
+                padding-right: 6px;
+                cursor: pointer;
+            }
+            .menu-item:active {
+                color: blue;
+            }
+        }
+    }
 
     #tabs {
         height: 100%;
-        flex: 1;
 
         .tab {
-            // height: 100%;
+            height: 100%;
         }
     }
 }
 
-.tab#planner_tab {
-    flex: 1;
+#planner_tab {
+    display: flex;
+    flex-direction: column;
     // overflow-y: auto;
 
     #list {
-        overflow-y: auto;
         flex: 1;
+        overflow-y: scroll;
         .note {
             display: flex;
             .date {
@@ -55,40 +83,31 @@ body {
             }
         }
     }
+
+    footer {
+        padding-bottom: 8px;
+        padding-top: 8px;
+        border-top: 2px solid black;
+    }
+}
+
+#settings_tab {
+    p {
+        margin-bottom: 5px;
+    }
+    label {
+        display: block;
+        margin-bottom: 3px;
+    }
+    input {
+        margin-bottom: 6px;
+    }
 }
 
 
 .hidden {
-    display: none;
+    display: none !important;
 }
 
-header {
-    margin-top: 15px;
-    margin-bottom: 5px;
-    padding-bottom: 5px;
-    display: flex;
-    border-bottom: 2px solid black;
-    h1 {
-        font-weight: bold;
-    }
-    #menu {
-        flex: 1;
-        display: flex;
-        justify-content: center;
 
-        .menu-item {
-            text-decoration: underline;
-            padding-right: 6px;
-            cursor: pointer;
-        }
-        .menu-item:active {
-            color: blue;
-        }
-    }
-}
 
-footer {
-    padding-bottom: 8px;
-    padding-top: 8px;
-    border-top: 2px solid black
-}

@@ -2,6 +2,7 @@
 
 <head>
     <title>Todo</title>
+    <link rel="stylsheet" href="https://fonts.googleapis.com/css?family=Fira+Code:300,400,500,600,700&display=swap">
 <link rel="stylesheet" href="/js.52877fb3.css"></head>
 
 
@@ -52,10 +53,22 @@
             </div>
             <div class="tab hidden" id="settings_tab">
                 <p>Planner saves to server by passing username and API key every
-                    time. Enter them below, or continue saving to localstorage</p>
-                <div>
-                    <input placeholder="Username">
-                    <input placeholder="API Key">
+                    time. Enter them below, or continue saving to localstorage.</p>
+                <div id="settings">
+                    <label for="server-username">Username</label>
+                    <input name="server-username" placeholder="Username">
+                    <label for="server-key">Key</label>
+                    <input name="server-key" placeholder="API Key">
+                    <label for="server-backup">Sync with server</label>
+                    <input type="checkbox" name="server-backup">
+                    <div class="row">
+                        <button>Save</button>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <button id="download_button">Download</button> a copy of your notes.
+                    </div>
+
                 </div>
                 <br>
                 <p>Built using <a href="https://parceljs.org">Parcel JS</a> and

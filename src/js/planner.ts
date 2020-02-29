@@ -1,6 +1,6 @@
 import { dateMMDD, getDate, getElements, populateCategories, stringToHTML } from "./helpers"
 import { newNote } from "./list"
-import { Note, state } from "./state"
+import { Note, state, saveState } from "./state"
 import { checkNote, deleteNote, editCallback, insertNote } from "./transforms"
 
 let domLink = {
@@ -80,6 +80,9 @@ function setupInput() {
 
                 dom.update.classList.toggle("hidden")
                 workingNote = updatedNote // or null
+
+
+                saveState(state)
             }
         }
     })
@@ -113,7 +116,9 @@ export function newNoteDOM(noteObj: Note) {
     }
 
     node.querySelector(".delete").addEventListener('click', () => {
-        deleteNote(state.list, dom, noteObj)
+        if (confirm("Are you sure you want to delete this item?")) {
+            deleteNote(state.list, dom, noteObj)
+        }
     })
 
     check.addEventListener('change', (e) => {
@@ -134,7 +139,6 @@ export function newNoteDOM(noteObj: Note) {
 
     node.querySelector(".category_text").addEventListener('click', () => {
         workingNote = noteObj
-        editCallback(state, dom, noteObj)
     })
     return node
 }

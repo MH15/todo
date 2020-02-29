@@ -22,7 +22,8 @@ export function initializeState(): StateType {
     let state
     if (!localStorageExists(LOCALSTORAGE_NAME)) {
         console.log("First session. Copy LOCALSTORAGE_TEMPLATE to store.")
-        state = setLocalStorageItem(LOCALSTORAGE_NAME, LOCALSTORAGE_TEMPLATE_LARGE)
+        state = LOCALSTORAGE_TEMPLATE_LARGE
+        setLocalStorageItem(LOCALSTORAGE_NAME, LOCALSTORAGE_TEMPLATE_LARGE)
     } else {
         state = getLocalStorageItem(LOCALSTORAGE_NAME)
     }
@@ -37,6 +38,10 @@ export interface Note {
     category: string,
     date: string,
     done: boolean
+}
+
+export function saveState(stateToSave) {
+    setLocalStorageItem(LOCALSTORAGE_NAME, stateToSave)
 }
 
 export let state = initializeState()
